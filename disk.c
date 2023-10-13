@@ -84,7 +84,8 @@ static void disk_settimer ()
   #endif
 
   // primeiro disparo, em nano-segundos,
-  disk.delay.it_value.tv_nsec = time_ms * 1000000 ;
+  disk.delay.it_value.tv_nsec = time_ms * 1000000 ; 
+ 
 
   // primeiro disparo, em segundos
   disk.delay.it_value.tv_sec  = time_ms / 1000 ;
