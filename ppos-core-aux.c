@@ -31,9 +31,9 @@ void before_task_create (task_t *task ) {
     printf("\ntask_create - BEFORE - [%d]", task->id);
 #endif
 }
-
 void after_task_create (task_t *task ) {
     // put your customization here
+      task->execTime = 99999;
 #ifdef DEBUG
     printf("\ntask_create - AFTER - [%d]", task->id);
 #endif
@@ -132,13 +132,12 @@ int before_task_join (task_t *task) {
 }
 
 int after_task_join (task_t *task) {
-    // put your customization here
+    task->execTime = systemTime;
 #ifdef DEBUG
     printf("\ntask_join - AFTER - [%d]", taskExec->id);
 #endif
     return 0;
 }
-
 
 int before_sem_create (semaphore_t *s, int value) {
     // put your customization here
@@ -402,6 +401,25 @@ task_t * scheduler() {
         return readyQueue;
     }
     return NULL;
+}
+void task_set_eet (task_t *task, int et){
+    if(task->state == 'X'){
+        task->remaningTimeTask = task->remaningTimeTask - task->execTime;
+        task->execTime = systemTime;
+    }
+    else {
+        task->remaningTimeTask = et;
+    }
+}
+
+int task_get_eet (task_t *task){
+    taskExec->execTime = systemTime - taskExec->execTime;
+    return taskExec->execTime;
+}
+
+int task_set_ret (task_t *task, int et){
+    taskExec->remaningTimeTask = taskExec->remaningTimeTask - task_get_eet(taskExec);
+    return taskExec->remaningTimeTask;
 }
 
 
