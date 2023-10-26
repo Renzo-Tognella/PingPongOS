@@ -13,26 +13,36 @@ struct itimerval timer;
 void tratador (int signum)
 {
     systemTime += 1;
+    taskExec->processTime++;
 }
 
 void task_set_eet (task_t *task, int et){
     if(task == NULL){
-        task->remaningTimeTask = task->remaningTimeTask*1000 - task->execTime;
-        task->execTime = systemTime;
+        taskExec->timeEstimate = task->timeEstimate - taskExec->processTime;
     }
     else {
-        task->remaningTimeTask = et*1000;
+        task->timeEstimate = et;
     }
 }
 
 int task_get_eet (task_t *task){
-    taskExec->execTime = systemTime - taskExec->execTime;
-    return taskExec->execTime;
+    if(task != NULL){
+        return task->timeEstimate;
+    }
+    else {
+        return taskExec->timeEstimate;
+    }
 }
 
 int task_get_ret (task_t *task, int et){
-    taskExec->remaningTimeTask = taskExec->remaningTimeTask - task_get_eet(taskExec);
-    return taskExec->remaningTimeTask;
+    if(task != NULL){
+        task->remaningTimeTask = task->timeEstimate - task->processTime;
+        return task->remaningTimeTask;
+    }
+    else{
+        taskExec->remaningTimeTask = taskExec->timeEstimate - taskExec->processTime;
+        return taskExec->remaningTimeTask;
+    }
 }
 
 // ****************************************************************************
@@ -42,7 +52,6 @@ task_t * scheduler() {
     // FCFS scheduler
     if ( readyQueue != NULL ) {
         for(int i = 0; i< 1000000000; i++){}
-	    printf("\ntime da tarefa atual: %d\n", taskExec->execTime);
         return readyQueue;
     }
     return NULL;
@@ -86,13 +95,15 @@ void after_ppos_init () {
 
 void before_task_create (task_t *task ) {
     // put your customization here
+    task->execTime = 99999;
 #ifdef DEBUG
     printf("\ntask_create - BEFORE - [%d]", task->id);
 #endif
 }
 void after_task_create (task_t *task ) {
     // put your customization here
-      task->execTime = 99999;
+    task->processTime = 0;
+    task->execTime = systime();
 #ifdef DEBUG
     printf("\ntask_create - AFTER - [%d]", task->id);
 #endif
@@ -107,6 +118,8 @@ void before_task_exit () {
 
 void after_task_exit () {
     // put your customization here
+    printf("\ntempo de execução da tarefa anterior: %d\n", (systime() - taskExec->execTime));
+    printf("\ntempo de proessador da tarefa anterior: %d\n", (taskExec->processTime));
 #ifdef DEBUG
     printf("\ntask_exit - AFTER- [%d]", taskExec->id);
 #endif
@@ -163,9 +176,8 @@ void before_task_resume(task_t *task) {
 
 void after_task_resume(task_t *task) {
     // put your customization here
-    task->execTime = systime();
-#ifdef DEBUG
     printf("\ntask_resume - AFTER - [%d]", task->id);
+#ifdef DEBUG
 #endif
 }
 

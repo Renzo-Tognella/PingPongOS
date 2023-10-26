@@ -27,6 +27,8 @@ typedef struct task_t
    // ... (outros campos deve ser adicionados APOS esse comentario);
    int execTime;
    int remaningTimeTask;
+   int processTime;
+   int timeEstimate;
    
 } task_t ;
 // estrutura que define um semáforo
