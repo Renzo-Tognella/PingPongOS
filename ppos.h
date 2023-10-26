@@ -98,9 +98,12 @@ void after_task_resume(task_t *task) ;
 
 // define a prioridade estática de uma tarefa (ou a tarefa atual)
 void task_setprio (task_t *task, int prio) ;
-
+void task_set_eet (task_t *task, int et);
 // retorna a prioridade estática de uma tarefa (ou a tarefa atual)
 int task_getprio (task_t *task) ;
+int task_get_eet (task_t *task);
+int task_get_ret (task_t *task, int et);
+
 
 // retorna a proxima tarefa a ser executada conforme a politica de escalonamento
 task_t * scheduler() ;
@@ -216,7 +219,8 @@ int after_mqueue_msgs (mqueue_t *queue) ;
 // funcao para debug. imprime os campos da estrutura task_t
 void print_tcb( task_t* task );
 
-//==============================================================================
+
+//=============================================================================
 
 // Redefinir funcoes POSIX "proibidas" como "FORBIDDEN" (gera erro ao compilar)
 

@@ -1,11 +1,11 @@
 main: inicio
 PPOS intialized successfully...
 Loop iterations to microseconds = 214948
-Criando tarefa: UTask[ 0]
-Criando tarefa: UTask[ 1]
-Criando tarefa: UTask[ 2]
-Criando tarefa: UTask[ 3]
-Criando tarefa: UTask[ 4]
+Criando tarefa: UTask[ 0] =30
+Criando tarefa: UTask[ 1] =50
+Criando tarefa: UTask[ 2] =70
+Criando tarefa: UTask[ 3] =90
+Criando tarefa: UTask[ 4] =110
 [2]	UTask[ 0]: inicio (tempo de execucao 30)
 [7]	UTask[ 0]: interacao 6044831		5
 [12]	UTask[ 0]: interacao 5649099		10
@@ -119,3 +119,4 @@ Task 9 exit: execution time 15 ms, processor time 15 ms, 1 activations
 
 Task 6 exit: execution time 395 ms, processor time 110 ms, 7 activations
 main: fim
+30, 50, 70, 90, 110, 130, 150, 170, 190, 210

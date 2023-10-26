@@ -16,7 +16,7 @@ task_t user_tasks[USER_TASKS_MAX];
 char user_tasks_names[USER_TASKS_MAX][15];
 //int user_tasks_execution_time[USER_TASKS_MAX] = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000}; // cenario 1
 //int user_tasks_execution_time[USER_TASKS_MAX] = {1000, 900, 800, 700, 600, 500, 400, 300, 200, 100}; // cenario 2
-int user_tasks_execution_time[USER_TASKS_MAX] = {30, 50, 70, 90, 110, 130, 150, 170, 190, 210}; // cenario 3
+int user_tasks_execution_time[USER_TASKS_MAX] = {30, 50, 70, 90, 110};//130, 150, 170, 190, 210}; // cenario 3
 //int user_tasks_execution_time[USER_TASKS_MAX] = {210, 190, 170, 150, 130, 110, 90, 70, 50, 30}; // cenario 4
 
 int one_tick = 0;
@@ -70,24 +70,23 @@ int main (int argc, char *argv[])
   
   printf ("main: inicio\n");
 
-  ppos_init () ;
-
-  // waiting for the first microsecond
+  ppos_init () ;  // waiting for the first microsecond
   while (systime() <= 0) ;
   // estimate how many iterations is a microsecond
   aux_time = systime() + 1;
   while (systime() < aux_time)
     one_tick++;
   // adjusting value
-  //one_tick = (one_tick*90)/100;
+  one_tick = (one_tick*90)/100;
   printf("Loop iterations to microseconds = %d\n", one_tick);
 
 
   // creating tasks
+
   for (i=0; i<USER_TASKS_MAX; i++) {
     sprintf(&user_tasks_names[i][0], "UTask[%2d]", i);
-    printf("Criando tarefa: %s\n", &user_tasks_names[i]);
-    task_create (&user_tasks[i], Body, &user_tasks_names[i]) ;
+    printf("Criando tarefa: %s\n", user_tasks_names[i]);
+    task_create (&user_tasks[i], Body, user_tasks_names[i]) ;
     task_set_eet(&user_tasks[i], user_tasks_execution_time[i]);
   }
 

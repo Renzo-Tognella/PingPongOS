@@ -15,4 +15,5 @@ extern unsigned char preemption; // indica se pode haver preempcao no momento.
                                 // qualquer outro valor indica desabilitado
 extern unsigned int systemTime; // conta o tempo global do sistema, em ticks do relogio
 
+
 #endif
