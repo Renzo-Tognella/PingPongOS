@@ -14,14 +14,18 @@ void tratador (int signum)
 {
     systemTime += 1;
     taskExec->processTime++;
+    taskExec->remaningTimeTask--;
 }
 
 void task_set_eet (task_t *task, int et){
     if(task == NULL){
         taskExec->timeEstimate = task->timeEstimate - taskExec->processTime;
+        taskExec->remaningTimeTask = taskExec->timeEstimate;
+
     }
     else {
         task->timeEstimate = et;
+        task->remaningTimeTask = et;
     }
 }
 
@@ -36,11 +40,9 @@ int task_get_eet (task_t *task){
 
 int task_get_ret (task_t *task, int et){
     if(task != NULL){
-        task->remaningTimeTask = task->timeEstimate - task->processTime;
         return task->remaningTimeTask;
     }
     else{
-        taskExec->remaningTimeTask = taskExec->timeEstimate - taskExec->processTime;
         return taskExec->remaningTimeTask;
     }
 }
@@ -119,7 +121,7 @@ void before_task_exit () {
 void after_task_exit () {
     // put your customization here
     printf("\ntempo de execução da tarefa anterior: %d\n", (systime() - taskExec->execTime));
-    printf("\ntempo de proessador da tarefa anterior: %d\n", (taskExec->processTime));
+    printf("\ntempo de processador da tarefa anterior: %d\n", (taskExec->processTime));
 #ifdef DEBUG
     printf("\ntask_exit - AFTER- [%d]", taskExec->id);
 #endif
@@ -176,8 +178,8 @@ void before_task_resume(task_t *task) {
 
 void after_task_resume(task_t *task) {
     // put your customization here
-    printf("\ntask_resume - AFTER - [%d]", task->id);
 #ifdef DEBUG
+    printf("\ntask_resume - AFTER - [%d]", task->id);
 #endif
 }
 
@@ -204,6 +206,7 @@ int before_task_join (task_t *task) {
 }
 
 int after_task_join (task_t *task) {
+
 #ifdef DEBUG
     printf("\ntask_join - AFTER - [%d]", taskExec->id);
 #endif

@@ -77,7 +77,7 @@ int main (int argc, char *argv[])
   while (systime() < aux_time)
     one_tick++;
   // adjusting value
-  one_tick = (one_tick*90)/100;
+  //one_tick = (one_tick*90)/100;
   printf("Loop iterations to microseconds = %d\n", one_tick);
 
 
