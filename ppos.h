@@ -98,9 +98,9 @@ void after_task_resume(task_t *task) ;
 
 // define a prioridade estática de uma tarefa (ou a tarefa atual)
 void task_setprio (task_t *task, int prio) ;
-void task_set_eet (task_t *task, int et);
-// retorna a prioridade estática de uma tarefa (ou a tarefa atual)
 int task_getprio (task_t *task) ;
+// retorna a prioridade estática de uma tarefa (ou a tarefa atual)
+void task_set_eet (task_t *task, int et);
 int task_get_eet (task_t *task);
 int task_get_ret (task_t *task, int et);
 

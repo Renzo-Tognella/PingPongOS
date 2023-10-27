@@ -53,7 +53,6 @@ int task_get_ret (task_t *task, int et){
 task_t * scheduler() {
     // FCFS scheduler
     if ( readyQueue != NULL ) {
-        for(int i = 0; i< 1000000000; i++){}
         return readyQueue;
     }
     return NULL;
@@ -99,15 +98,19 @@ void before_task_create (task_t *task ) {
     // put your customization here
     task->execTime = 99999;
 #ifdef DEBUG
-    printf("\ntask_create - BEFORE - [%d]", task->id);
 #endif
 }
 void after_task_create (task_t *task ) {
     // put your customization here
+    printf("\ntask_create - BEFORE - [%d]", task->id);
+    if(task->id == 2){
+        systemTime = 0;
+    }
     task->processTime = 0;
     task->execTime = systime();
+    printf("\ntask_create - AFTER - [%d] tempo do sistema: %d\n", task->id, systime());    
+
 #ifdef DEBUG
-    printf("\ntask_create - AFTER - [%d]", task->id);
 #endif
 }
 
@@ -120,8 +123,7 @@ void before_task_exit () {
 
 void after_task_exit () {
     // put your customization here
-    printf("\ntempo de execução da tarefa anterior: %d\n", (systime() - taskExec->execTime));
-    printf("\ntempo de processador da tarefa anterior: %d\n", (taskExec->processTime));
+    printf("\ntempo de execução da tarefa anterior: %d e de processador: %d\n" , (systime() - taskExec->execTime), (taskExec->processTime));
 #ifdef DEBUG
     printf("\ntask_exit - AFTER- [%d]", taskExec->id);
 #endif
@@ -206,9 +208,7 @@ int before_task_join (task_t *task) {
 }
 
 int after_task_join (task_t *task) {
-
 #ifdef DEBUG
-    printf("\ntask_join - AFTER - [%d]", taskExec->id);
 #endif
     return 0;
 }
@@ -468,6 +468,5 @@ int after_mqueue_msgs (mqueue_t *queue) {
 #endif
     return 0;
 }
-
 
 
