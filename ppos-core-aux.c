@@ -14,9 +14,6 @@ void tratador(int signum)
     systemTime += 1;
     taskExec->processTime++;
     taskExec->remaningTimeTask--;
-    if(countTasks > 2 && taskExec->remaningTimeTask != 0){
-        scheduler();
-    }
 }
 
 void task_set_eet(task_t *task, int et)
@@ -60,29 +57,36 @@ task_t *organiza()
 {
     if (readyQueue != NULL)
     {
-        if(countTasks > 2){ 
+        
         task_t *shortestTask = readyQueue;
         //printf("time :%d e id (%d)", shortestTask->remaningTimeTask, shortestTask->id);
         task_t *currentTask = shortestTask;
         int i = 0;
+        //printf("counttask: (%ld) ", countTasks);
+        //printf("LOOP: (%d) ", i);
         while (i < countTasks)
         {
             //printf("time :%d e id (%d)", currentTask->remaningTimeTask, currentTask->id);
-            if ((task_get_ret(currentTask) < task_get_ret(shortestTask)) && (currentTask->id != 0)&& (currentTask->id != 1))
-            {
-               // printf("time :%d e id (%d)", currentTask->remaningTimeTask, currentTask->id);
-                shortestTask = currentTask;
+            if(shortestTask->remaningTimeTask < 0){
+                shortestTask = currentTask; 
             }
+            if ((task_get_ret(currentTask) < task_get_ret(shortestTask))){
+            if (currentTask->remaningTimeTask > 0){
+                shortestTask = currentTask;
+
+            }}
             i++;
             currentTask = currentTask->next;
         }
         //printf("time :%d e id (%d)", shortestTask->remaningTimeTask, shortestTask->id);
         if (shortestTask->id == taskExec->id)
         {
+            readyQueue = taskExec;
             return readyQueue;
         }
+
         readyQueue = shortestTask;
-        }
+        
         return readyQueue;
     }
     return NULL;
@@ -157,8 +161,9 @@ void after_task_create(task_t *task)
     }
     task->processTime = 0;
     task->execTime = systime();
-    //printf("\ntask_create - AFTER - [%d] tempo do sistema: %d\n", task->id, systime());
+
 #ifdef DEBUG
+    printf("\ntask_create - AFTER - [%d] tempo do sistema: %ld\n", task->id, countTasks);
 #endif
 }
 
@@ -173,7 +178,6 @@ void before_task_exit()
 void after_task_exit()
 {
     // put your customization here
-    
     printf("\ntempo de execução da tarefa anterior: %d e de processador: %d\n", (systime() - taskExec->execTime), (taskExec->processTime));
 #ifdef DEBUG
     printf("\ntask_exit - AFTER- [%d]", taskExec->id);
@@ -199,7 +203,7 @@ void before_task_yield()
 {
     // put your customization here
 #ifdef DEBUG
-    printf("\ntask_yield - BEFORE - [%d]", taskExec->id);
+    printf("\ntask_yield - BEFORE - [%d] %d", taskExec->id);
 #endif
 }
 void after_task_yield()
