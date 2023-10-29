@@ -13,8 +13,11 @@ void tratador(int signum)
 {
     systemTime += 1;
     taskExec->processTime++;
+    //incrementa o tempo de processador da tarefa em execucao
     taskExec->remaningTimeTask--;
+    //decrementa o tempo restante da tarefa em execucao
     taskExec->quantum--;
+    //decrementa o quantum da tarefa em execucao
     if(taskExec->quantum <= 0){
         if(taskExec->remaningTimeTask > 0){
             taskExec->activations++;
@@ -22,6 +25,9 @@ void tratador(int signum)
         }
         scheduler();
     }
+    //verifica se o quantum da tarefa em execucao acabou e se acabou migra para proxima tarefa
+    //que obdece as politicas do escalonador, e incrementa activations, pois, se ainda resta tempo
+    //de execucao ele voltara para o processamento novamente.
 }
 
 void task_set_eet(task_t *task, int et)
@@ -30,6 +36,7 @@ void task_set_eet(task_t *task, int et)
     {
         taskExec->timeEstimate = task->timeEstimate - taskExec->processTime;
         taskExec->remaningTimeTask = taskExec->timeEstimate;
+        //reajusta o tempo estimado da tarefa em execucao de acordo com o tempo passado
     }
     else
     {
@@ -48,6 +55,7 @@ int task_get_eet(task_t *task)
     {
         return taskExec->timeEstimate;
     }
+    //retorna o tempo estimado de execucao
 }
 
 int task_get_ret(task_t *task)
@@ -60,6 +68,7 @@ int task_get_ret(task_t *task)
     {
         return taskExec->remaningTimeTask;
     }
+    //retorna o tempo que falta de execucao
 }
 task_t *organiza()
 {
@@ -67,33 +76,38 @@ task_t *organiza()
     {
         
         task_t *shortestTask = readyQueue;
-        //printf("time :%d e id (%d)", shortestTask->remaningTimeTask, shortestTask->id);
+        //tarefa aponta para readyqueue
         task_t *currentTask = shortestTask;
+        //tarefa aux
         int i = 0;
-        //printf("counttask: (%ld) ", countTasks);
-        //printf("LOOP: (%d) ", i); 
+        //verifica a quantidade de tasks existentes 
         while (i < countTasks)
         {
-            //printf("time :%d e id (%d)", currentTask->remaningTimeTask, currentTask->id);
+            //verifica se o tempo é menor que 0, pois se for não é uma tarefa do usuario e ai retorna a prox tarefa
             if(shortestTask->remaningTimeTask < 0){
                 shortestTask = currentTask; 
             }
             if ((task_get_ret(currentTask) < task_get_ret(shortestTask))){
-            if (currentTask->remaningTimeTask > 0){
-                shortestTask = currentTask;
+                //verifica se a tarefa atual é menor que a proxima
+                if (currentTask->remaningTimeTask > 0){
+                    shortestTask = currentTask;
+                //verifica se currentTask é maior q o e atribui a shortest
+                }  
+            }  
 
-            }}
             i++;
             currentTask = currentTask->next;
         }
-        //printf("time :%d e id (%d)", shortestTask->remaningTimeTask, shortestTask->id);
         if (shortestTask->id == taskExec->id)
         {
+            //verifica se a task passada como menor não é a  task em exec se for ela retorna a task em exec
+            //e define um quantum novo a ela
             readyQueue = taskExec;
             readyQueue->quantum = 20;
             return readyQueue;
             
         }
+        //atribui a tarefa de menor tempo a readyqueue e define um quantum novo a ela
         readyQueue = shortestTask;
         readyQueue->quantum = 20;
         return readyQueue;
@@ -156,9 +170,9 @@ void after_ppos_init()
 void before_task_create(task_t *task)
 {
     // put your customization here
-    task->execTime = 99999;
-    //printf("\ntask_create - BEFORE - [%d]", task->id);
+    task->execTime = 99999;//tempo de execucao padrão
 #ifdef DEBUG
+    //printf("\ntask_create - BEFORE - [%d]", task->id);
 #endif
 }
 void after_task_create(task_t *task)
@@ -166,12 +180,13 @@ void after_task_create(task_t *task)
     // put your customization here
     if (task->id == 2)
     {
-        systemTime = 0;
+        systemTime = 0; //zera o tempo do system a partir do momento que é criado a primeira task do usuario
     }
     task->activations = 0;
     task->processTime = 0;
     task->execTime = systime();
     task->quantum = 20;
+    //inicializa as métricas
 
 #ifdef DEBUG
     printf("\ntask_create - AFTER - [%d] tempo do sistema: %ld\n", task->id, countTasks);
@@ -190,6 +205,7 @@ void after_task_exit()
 {
     // put your customization here
     taskExec->quantum = 0;
+    //zera o qunatum da tarefa terminada e printa as métricas dela
     printf("\nTASK %d teve tempo de execução da tarefa anterior: %d e de processador: %d e %d activations\n"
     ,taskExec->id, (systime() - taskExec->execTime), (taskExec->processTime), (taskExec->activations));
 #ifdef DEBUG
@@ -207,6 +223,7 @@ void before_task_switch(task_t *task)
 void after_task_switch(task_t *task)
 {
     //printf("\nA task atual tem um quantum de: [%d]\n", taskExec->quantum);
+    //incrementa activations para falar que a tarefa passada recebera o processador mais uma vez
     task->activations++;
     // put your customization here
 #ifdef DEBUG
