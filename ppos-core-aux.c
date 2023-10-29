@@ -14,6 +14,14 @@ void tratador(int signum)
     systemTime += 1;
     taskExec->processTime++;
     taskExec->remaningTimeTask--;
+    taskExec->quantum--;
+    if(taskExec->quantum <= 0){
+        if(taskExec->remaningTimeTask > 0){
+            taskExec->activations++;
+            taskExec->quantum = 20;
+        }
+        scheduler();
+    }
 }
 
 void task_set_eet(task_t *task, int et)
@@ -63,7 +71,7 @@ task_t *organiza()
         task_t *currentTask = shortestTask;
         int i = 0;
         //printf("counttask: (%ld) ", countTasks);
-        //printf("LOOP: (%d) ", i);
+        //printf("LOOP: (%d) ", i); 
         while (i < countTasks)
         {
             //printf("time :%d e id (%d)", currentTask->remaningTimeTask, currentTask->id);
@@ -82,11 +90,12 @@ task_t *organiza()
         if (shortestTask->id == taskExec->id)
         {
             readyQueue = taskExec;
+            readyQueue->quantum = 20;
             return readyQueue;
+            
         }
-
         readyQueue = shortestTask;
-        
+        readyQueue->quantum = 20;
         return readyQueue;
     }
     return NULL;
@@ -148,19 +157,21 @@ void before_task_create(task_t *task)
 {
     // put your customization here
     task->execTime = 99999;
+    //printf("\ntask_create - BEFORE - [%d]", task->id);
 #ifdef DEBUG
 #endif
 }
 void after_task_create(task_t *task)
 {
     // put your customization here
-    //printf("\ntask_create - BEFORE - [%d]", task->id);
     if (task->id == 2)
     {
         systemTime = 0;
     }
+    task->activations = 0;
     task->processTime = 0;
     task->execTime = systime();
+    task->quantum = 20;
 
 #ifdef DEBUG
     printf("\ntask_create - AFTER - [%d] tempo do sistema: %ld\n", task->id, countTasks);
@@ -178,7 +189,9 @@ void before_task_exit()
 void after_task_exit()
 {
     // put your customization here
-    printf("\ntempo de execução da tarefa anterior: %d e de processador: %d\n", (systime() - taskExec->execTime), (taskExec->processTime));
+    taskExec->quantum = 0;
+    printf("\nTASK %d teve tempo de execução da tarefa anterior: %d e de processador: %d e %d activations\n"
+    ,taskExec->id, (systime() - taskExec->execTime), (taskExec->processTime), (taskExec->activations));
 #ifdef DEBUG
     printf("\ntask_exit - AFTER- [%d]", taskExec->id);
 #endif
@@ -193,6 +206,8 @@ void before_task_switch(task_t *task)
 
 void after_task_switch(task_t *task)
 {
+    //printf("\nA task atual tem um quantum de: [%d]\n", taskExec->quantum);
+    task->activations++;
     // put your customization here
 #ifdef DEBUG
     printf("\ntask_switch - AFTER - [%d -> %d]", taskExec->id, task->id);
@@ -242,7 +257,6 @@ void after_task_resume(task_t *task)
 {
     // put your customization here
 #ifdef DEBUG
-    printf("\ntask_resume - AFTER - [%d]", task->id);
 #endif
 }
 
